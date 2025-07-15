@@ -11,8 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        #reader { width: 100%; max-width: 500px; border: 2px dashed #e2e8f0; border-radius: 0.5rem; overflow: hidden; }
-        #reader video { width: 100% !important; height: auto !important; }
+        #scanner-container { border: 2px dashed #e2e8f0; border-radius: 0.5rem; overflow: hidden; background-color: #000; }
+        #scanner-container video { width: 100% !important; height: auto !important; }
         .modal { transition: opacity 0.25s ease; }
         .modal-content { transition: transform 0.25s ease; }
         input:focus, .editable:focus { outline: 2px solid #3498db; background-color: #ecf0f1; }
@@ -33,19 +33,14 @@
             opacity: 0;
             transition: opacity 0.5s, visibility 0.5s, bottom 0.5s;
         }
-        .toast.show {
-            visibility: visible;
-            opacity: 1;
-            bottom: 50px;
-        }
+        .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+        .input-group-focus { box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.4); }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
-    <!-- Contenedor principal -->
-    <div class="container mx-auto p-4 max-w-4xl">
+    <div class="container mx-auto p-4 max-w-5xl">
 
-        <!-- Cabecera -->
         <header class="flex justify-between items-center bg-white p-4 rounded-lg shadow-md mb-6">
             <div class="flex items-center space-x-4">
                 <img id="company-logo-display" src="https://placehold.co/80x80/e2e8f0/333333?text=Logo" alt="Logo de la Empresa" class="h-16 w-16 object-contain rounded-md bg-gray-200">
@@ -59,48 +54,72 @@
             </button>
         </header>
 
-        <!-- Escáner y Controles -->
+        <section class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4">Cargar Nuevo Item</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div id="product-code-group">
+                        <label for="product-code-input" class="block text-sm font-medium text-gray-700 mb-1">1. Código de Producto</label>
+                        <div class="flex">
+                            <input type="text" id="product-code-input" class="flex-grow w-full px-3 py-2 bg-white border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <button id="scan-product-btn" class="bg-blue-600 text-white p-2 rounded-r-md hover:bg-blue-700 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5.5V3h2.5a.5.5 0 0 1 0 1H13v-3a.5.5 0 0 1 .5-.5ZM.5 12a.5.5 0 0 1 0 1H3v2.5a.5.5 0 0 1 1 0V13h-3a.5.5 0 0 1-.5-.5Zm12 0a.5.5 0 0 1 .5.5v3h-2.5a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1-.5-.5ZM1 4h14v8H1V4Z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="location-group">
+                        <label for="location-input" class="block text-sm font-medium text-gray-700 mb-1">2. Ubicación</label>
+                        <div class="flex">
+                            <input type="text" id="location-input" class="flex-grow w-full px-3 py-2 bg-white border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <button id="scan-location-btn" class="bg-blue-600 text-white p-2 rounded-r-md hover:bg-blue-700 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5.5V3h2.5a.5.5 0 0 1 0 1H13v-3a.5.5 0 0 1 .5-.5ZM.5 12a.5.5 0 0 1 0 1H3v2.5a.5.5 0 0 1 1 0V13h-3a.5.5 0 0 1-.5-.5Zm12 0a.5.5 0 0 1 .5.5v3h-2.5a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1-.5-.5ZM1 4h14v8H1V4Z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="quantity-input" class="block text-sm font-medium text-gray-700 mb-1">3. Cantidad</label>
+                        <input type="number" id="quantity-input" value="1" min="1" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button id="add-item-btn" class="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition-all self-end">
+                        Agregar Item
+                    </button>
+                </div>
+            </div>
+            <div id="scanner-container" class="mx-auto mt-4 max-w-lg hidden"></div>
+        </section>
+
         <main class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-            <div class="flex flex-col md:flex-row gap-6">
-                <div class="flex-1">
-                    <h2 class="text-xl font-bold mb-4">Escanear Código de Barras</h2>
-                    <div id="reader" class="mx-auto"></div>
-                    <div id="scanner-controls" class="mt-4 text-center">
-                         <button id="start-scan-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-all w-full">
-                            Iniciar Escáner
-                        </button>
-                    </div>
-                </div>
-                <div class="md:w-px bg-gray-200"></div>
-                <div class="flex-1 flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold">Items Cargados</h2>
-                        <button id="finish-load-btn" class="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition-all">
-                            Terminar Carga
-                        </button>
-                    </div>
-                    <div class="flex-grow overflow-auto border rounded-lg">
-                        <table class="w-full min-w-[600px]">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="p-3 text-left text-sm font-semibold text-gray-600 tracking-wider">Código Producto</th>
-                                    <th class="p-3 text-left text-sm font-semibold text-gray-600 tracking-wider">Ubicación</th>
-                                    <th class="p-3 text-left text-sm font-semibold text-gray-600 tracking-wider">Cantidad</th>
-                                    <th class="p-3 text-center text-sm font-semibold text-gray-600 tracking-wider">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="inventory-table-body" class="bg-white divide-y divide-gray-200">
-                                <!-- Filas de la tabla se insertarán aquí -->
-                            </tbody>
-                        </table>
-                    </div>
-                     <p id="no-items-msg" class="text-center text-gray-500 p-8">No hay items cargados. Use el escáner para comenzar.</p>
-                </div>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Items Cargados</h2>
+                <button id="finish-load-btn" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-all">
+                    Terminar Carga
+                </button>
+            </div>
+            <div class="overflow-auto border rounded-lg">
+                <table class="w-full min-w-[600px]">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="p-3 text-left text-sm font-semibold text-gray-600 tracking-wider">Código Producto</th>
+                            <th class="p-3 text-left text-sm font-semibold text-gray-600 tracking-wider">Ubicación</th>
+                            <th class="p-3 text-left text-sm font-semibold text-gray-600 tracking-wider">Cantidad</th>
+                            <th class="p-3 text-center text-sm font-semibold text-gray-600 tracking-wider">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table-body" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                </table>
+            </div>
+            <p id="no-items-msg" class="text-center text-gray-500 p-8">No hay items cargados. Use la sección de carga para comenzar.</p>
+            <div class="mt-6 flex justify-end">
+                <button id="reset-load-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition-all">
+                    Resetear Carga
+                </button>
             </div>
         </main>
     </div>
 
-    <!-- Modal de Ajustes -->
     <div id="settings-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
         <div class="modal-content bg-white w-full max-w-md p-6 rounded-lg shadow-xl transform scale-95">
             <h3 class="text-2xl font-bold mb-6">Ajustes de la Empresa</h3>
@@ -114,7 +133,7 @@
                     <input type="text" id="company-address-input" placeholder="Ej: Av. Siempreviva 742" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div>
-                    <label for="company-phone-input" class="block text-sm font-medium text-gray-700">Teléfono</o>
+                    <label for="company-phone-input" class="block text-sm font-medium text-gray-700">Teléfono</label>
                     <input type="tel" id="company-phone-input" placeholder="Ej: +54 11 1234-5678" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 </div>
             </div>
@@ -125,7 +144,6 @@
         </div>
     </div>
 
-    <!-- Modal de Exportación -->
     <div id="export-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
         <div class="modal-content bg-white w-full max-w-sm p-6 rounded-lg shadow-xl transform scale-95">
             <h3 class="text-2xl font-bold mb-6 text-center">Exportar Datos</h3>
@@ -133,27 +151,48 @@
             <div class="space-y-3">
                 <button id="export-xlsx-btn" class="w-full flex items-center justify-center bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="mr-2" viewBox="0 0 16 16"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V9H3V2a1 1 0 0 1 1-1h5.5v2zM3 12v-2h2v2H3zm0 1h2v2H3v-2zm0-5h2v2H3v-2zm3 5h2v2H6v-2zm0-2h2v2H6v-2zm0-3h2v2H6V9zm3 2h2v2H9v-2zm0-2h2v2H9v-2zm0-3h2v2H9V9z"/></svg>
-                Excel (.xlsx)
+                    Excel (.xlsx)
                 </button>
                 <button id="export-csv-btn" class="w-full flex items-center justify-center bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-800 transition-all">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="mr-2" viewBox="0 0 16 16"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V9H3V2a1 1 0 0 1 1-1h5.5v2zM3 12v-2h2v2H3zm0 1h2v2H3v-2zm0-5h2v2H3v-2zm3 5h2v2H6v-2zm0-2h2v2H6v-2zm0-3h2v2H6V9zm3 2h2v2H9v-2zm0-2h2v2H9v-2zm0-3h2v2H9V9z"/></svg>
-                CSV para Excel
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="mr-2" viewBox="0 0 16 16"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V9H3V2a1 1 0 0 1 1-1h5.5v2zM3 12v-2h2v2H3zm0 1h2v2H3v-2zm0-5h2v2H3v-2zm3 5h2v2H6v-2zm0-2h2v2H6v-2zm0-3h2v2H6V9zm3 2h2v2H9v-2zm0-2h2v2H9v-2zm0-3h2v2H9V9z"/></svg>
+                    CSV para Excel
                 </button>
                 <button id="export-txt-btn" class="w-full flex items-center justify-center bg-gray-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-600 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="mr-2" viewBox="0 0 16 16"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/><path d="M4.5 12.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/></svg>
-                Texto (coma sep.)
+                    Texto (coma sep.)
                 </button>
             </div>
-             <div class="mt-6 text-center">
+            <div class="mt-6 text-center">
                 <button id="cancel-export-btn" class="text-gray-600 hover:text-gray-900 font-semibold">Cerrar</button>
             </div>
         </div>
     </div>
     
-    <!-- Toast Notification -->
+    <div id="confirm-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="modal-content bg-white w-full max-w-sm p-6 rounded-lg shadow-xl transform scale-95">
+            <h3 id="confirm-title" class="text-xl font-bold mb-4">Confirmación</h3>
+            <p id="confirm-message" class="text-gray-600 mb-6">¿Está seguro?</p>
+            <div class="flex justify-end space-x-3">
+                <button id="confirm-cancel-btn" class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">No</button>
+                <button id="confirm-ok-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700">Sí</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="password-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="modal-content bg-white w-full max-w-sm p-6 rounded-lg shadow-xl transform scale-95">
+            <h3 class="text-xl font-bold mb-4">Requiere Contraseña</h3>
+            <p class="text-gray-600 mb-4">Para continuar, por favor ingrese la contraseña de 4 dígitos.</p>
+            <input type="password" id="password-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" class="w-full px-3 py-2 text-center text-2xl tracking-[.5em] bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <div class="flex justify-end space-x-3 mt-6">
+                <button id="password-cancel-btn" class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
+                <button id="password-confirm-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast" class="toast"></div>
 
-    <!-- Scripts -->
     <script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
@@ -162,8 +201,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(registration => console.log('ServiceWorker registration successful with scope: ', registration.scope))
-                    .catch(error => console.log('ServiceWorker registration failed: ', error));
+                    .catch(error => console.log('SW registration failed: ', error));
             });
         }
 
@@ -171,27 +209,42 @@
             // --- State Management ---
             let companyInfo = {};
             let inventory = [];
-            let html5QrcodeScanner;
+            let html5Qrcode;
+            let currentScanTarget = null; // 'product' or 'location'
+            let confirmCallback = null;
 
-            const config = {
-                fps: 10,
-                qrbox: { width: 250, height: 250 }
-            };
+            const config = { fps: 10, qrbox: { width: 250, height: 250 }, rememberedStates: true };
+            const RESET_PASSWORD = '3550'; // Password for resetting data
 
             // --- DOM Elements ---
-            const settingsModal = document.getElementById('settings-modal');
-            const exportModal = document.getElementById('export-modal');
-            const tableBody = document.getElementById('inventory-table-body');
-            const noItemsMsg = document.getElementById('no-items-msg');
-            const toast = document.getElementById('toast');
+            const dom = {
+                settingsModal: document.getElementById('settings-modal'),
+                exportModal: document.getElementById('export-modal'),
+                confirmModal: document.getElementById('confirm-modal'),
+                passwordModal: document.getElementById('password-modal'),
+                tableBody: document.getElementById('inventory-table-body'),
+                noItemsMsg: document.getElementById('no-items-msg'),
+                toast: document.getElementById('toast'),
+                scannerContainer: document.getElementById('scanner-container'),
+                productCodeInput: document.getElementById('product-code-input'),
+                locationInput: document.getElementById('location-input'),
+                quantityInput: document.getElementById('quantity-input'),
+                productCodeGroup: document.getElementById('product-code-group'),
+                locationGroup: document.getElementById('location-group'),
+                passwordInput: document.getElementById('password-input'),
+                companyLogoDisplay: document.getElementById('company-logo-display'),
+                companyAddressDisplay: document.getElementById('company-address-display'),
+                companyPhoneDisplay: document.getElementById('company-phone-display'),
+                companyLogoInput: document.getElementById('company-logo-input'),
+                companyAddressInput: document.getElementById('company-address-input'),
+                companyPhoneInput: document.getElementById('company-phone-input'),
+            };
 
             // --- Utility Functions ---
             const showToast = (message, duration = 3000) => {
-                toast.textContent = message;
-                toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, duration);
+                dom.toast.textContent = message;
+                dom.toast.classList.add('show');
+                setTimeout(() => dom.toast.classList.remove('show'), duration);
             };
 
             const toggleModal = (modal, show) => {
@@ -209,46 +262,61 @@
                 }
             };
 
+            const showConfirm = (title, message, callback) => {
+                document.getElementById('confirm-title').textContent = title;
+                document.getElementById('confirm-message').textContent = message;
+                confirmCallback = callback;
+                toggleModal(dom.confirmModal, true);
+            };
+            
+            const showPasswordPrompt = (callback) => {
+                dom.passwordInput.value = '';
+                confirmCallback = callback; // Store the callback for when password is confirmed
+                toggleModal(dom.passwordModal, true);
+                setTimeout(() => dom.passwordInput.focus(), 260);
+            };
+
             // --- Data Persistence ---
             const saveState = () => {
                 localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
                 localStorage.setItem('inventory', JSON.stringify(inventory));
-                console.log('State saved.');
             };
 
             const loadState = () => {
                 companyInfo = JSON.parse(localStorage.getItem('companyInfo')) || {};
                 inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-                console.log('State loaded.');
                 renderCompanyInfo();
                 renderTable();
+            };
+            
+            const clearInventory = () => {
+                inventory = [];
+                saveState();
+                renderTable();
+                showToast('Datos borrados correctamente.');
             };
 
             // --- Rendering ---
             const renderCompanyInfo = () => {
-                document.getElementById('company-logo-display').src = companyInfo.logo || 'https://placehold.co/80x80/e2e8f0/333333?text=Logo';
-                document.getElementById('company-address-display').textContent = companyInfo.address || 'Dirección no configurada';
-                document.getElementById('company-phone-display').textContent = companyInfo.phone || 'Teléfono no configurado';
-                
-                document.getElementById('company-address-input').value = companyInfo.address || '';
-                document.getElementById('company-phone-input').value = companyInfo.phone || '';
+                dom.companyLogoDisplay.src = companyInfo.logo || 'https://placehold.co/80x80/e2e8f0/333333?text=Logo';
+                dom.companyAddressDisplay.textContent = companyInfo.address || 'Dirección no configurada';
+                dom.companyPhoneDisplay.textContent = companyInfo.phone || 'Teléfono no configurado';
+
+                // Set input values for the modal
+                dom.companyAddressInput.value = companyInfo.address || '';
+                dom.companyPhoneInput.value = companyInfo.phone || '';
             };
 
             const renderTable = () => {
-                tableBody.innerHTML = '';
-                if (inventory.length === 0) {
-                    noItemsMsg.classList.remove('hidden');
-                    tableBody.parentElement.parentElement.classList.add('hidden');
-                } else {
-                    noItemsMsg.classList.add('hidden');
-                    tableBody.parentElement.parentElement.classList.remove('hidden');
-                }
+                dom.tableBody.innerHTML = '';
+                const hasItems = inventory.length > 0;
+                dom.noItemsMsg.classList.toggle('hidden', hasItems);
+                dom.tableBody.parentElement.parentElement.classList.toggle('hidden', !hasItems);
 
                 inventory.forEach(item => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50';
                     row.dataset.id = item.id;
-
                     row.innerHTML = `
                         <td class="p-3"><input type="text" value="${item.productCode}" class="w-full bg-transparent p-1 rounded-md border border-transparent focus:border-blue-500" data-field="productCode"></td>
                         <td class="p-3"><input type="text" value="${item.location}" class="w-full bg-transparent p-1 rounded-md border border-transparent focus:border-blue-500" data-field="location"></td>
@@ -259,126 +327,58 @@
                             </button>
                         </td>
                     `;
-                    tableBody.appendChild(row);
+                    dom.tableBody.appendChild(row);
                 });
             };
 
             // --- Barcode Scanner Logic ---
-            const onScanSuccess = (decodedText, decodedResult) => {
-                console.log(`Scan result: ${decodedText}`, decodedResult);
+            const startScanner = (target) => {
+                currentScanTarget = target;
+                dom.scannerContainer.classList.remove('hidden');
+                dom.productCodeGroup.classList.toggle('input-group-focus', target === 'product');
+                dom.locationGroup.classList.toggle('input-group-focus', target === 'location');
+
+                if (!html5Qrcode) {
+                    html5Qrcode = new Html5Qrcode("scanner-container");
+                }
                 
-                // Stop scanning after a successful scan
-                if (html5QrcodeScanner && html5QrcodeScanner.getState() === 2) { // 2 is SCANNING state
-                    html5QrcodeScanner.pause(true);
-                    setTimeout(() => html5QrcodeScanner.resume(), 2000); // Pause for 2s to prevent multiple scans
-                }
-
-                const parts = decodedText.split('.');
-                const location = parts.pop() || 'N/A';
-                const productCode = parts.join('.') || 'N/A';
-
-                const newItem = {
-                    id: Date.now(),
-                    productCode: productCode,
-                    location: location,
-                    quantity: 1
-                };
-
-                inventory.unshift(newItem); // Add to the beginning of the list
-                saveState();
-                renderTable();
-                showToast(`Item "${productCode}" agregado!`);
+                html5Qrcode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+                    .catch(err => console.error("Error al iniciar el escáner:", err));
             };
 
-            const onScanFailure = (error) => {
-                // console.warn(`Code scan error = ${error}`);
+            const stopScanner = () => {
+                if (html5Qrcode && html5Qrcode.isScanning) {
+                    html5Qrcode.stop().then(() => {
+                        dom.scannerContainer.classList.add('hidden');
+                        dom.productCodeGroup.classList.remove('input-group-focus');
+                        dom.locationGroup.classList.remove('input-group-focus');
+                        currentScanTarget = null;
+                    }).catch(err => console.error("Error al detener el escáner:", err));
+                }
             };
 
-            // --- Event Listeners ---
-            document.getElementById('start-scan-btn').addEventListener('click', () => {
-                const startBtn = document.getElementById('start-scan-btn');
-                if (!html5QrcodeScanner || html5QrcodeScanner.getState() !== 2) {
-                    html5QrcodeScanner = new Html5QrcodeScanner("reader", config, false);
-                    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-                    startBtn.textContent = 'Detener Escáner';
-                    startBtn.classList.replace('bg-blue-600', 'bg-red-600');
-                    startBtn.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
-
-                } else {
-                    html5QrcodeScanner.clear().catch(error => console.error("Failed to clear scanner.", error));
-                    html5QrcodeScanner = null;
-                    startBtn.textContent = 'Iniciar Escáner';
-                    startBtn.classList.replace('bg-red-600', 'bg-blue-600');
-                    startBtn.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+            const onScanSuccess = (decodedText) => {
+                if (currentScanTarget === 'product') {
+                    dom.productCodeInput.value = decodedText;
+                    stopScanner();
+                    showToast('Código de producto escaneado. Ahora escanee la ubicación.');
+                    setTimeout(() => startScanner('location'), 500); // Auto-start next scan
+                } else if (currentScanTarget === 'location') {
+                    dom.locationInput.value = decodedText;
+                    stopScanner();
+                    showToast('Ubicación escaneada.');
+                    dom.quantityInput.focus();
+                    dom.quantityInput.select();
                 }
-            });
+            };
 
-            // Settings Modal
-            document.getElementById('settings-btn').addEventListener('click', () => toggleModal(settingsModal, true));
-            document.getElementById('cancel-settings-btn').addEventListener('click', () => toggleModal(settingsModal, false));
-            document.getElementById('save-settings-btn').addEventListener('click', () => {
-                companyInfo.address = document.getElementById('company-address-input').value;
-                companyInfo.phone = document.getElementById('company-phone-input').value;
-
-                const logoFile = document.getElementById('company-logo-input').files[0];
-                if (logoFile) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        companyInfo.logo = e.target.result;
-                        saveState();
-                        renderCompanyInfo();
-                        showToast('Ajustes guardados con éxito.');
-                    };
-                    reader.readAsDataURL(logoFile);
-                } else {
-                    saveState();
-                    renderCompanyInfo();
-                    showToast('Ajustes guardados con éxito.');
-                }
-                toggleModal(settingsModal, false);
-            });
-
-            // Table Editing & Deleting
-            tableBody.addEventListener('input', (e) => {
-                if (e.target.tagName === 'INPUT') {
-                    const id = parseInt(e.target.closest('tr').dataset.id);
-                    const field = e.target.dataset.field;
-                    const value = e.target.type === 'number' ? parseInt(e.target.value) : e.target.value;
-                    const item = inventory.find(i => i.id === id);
-                    if (item) {
-                        item[field] = value;
-                        saveState();
-                    }
-                }
-            });
-
-            tableBody.addEventListener('click', (e) => {
-                if (e.target.closest('.delete-btn')) {
-                    const row = e.target.closest('tr');
-                    const id = parseInt(row.dataset.id);
-                    if (confirm('¿Estás seguro de que quieres eliminar este item?')) {
-                        inventory = inventory.filter(i => i.id !== id);
-                        saveState();
-                        renderTable();
-                        showToast('Item eliminado.');
-                    }
-                }
-            });
-
-            // Export Modal
-            document.getElementById('finish-load-btn').addEventListener('click', () => {
-                if(inventory.length === 0) {
-                    showToast('No hay datos para exportar.');
-                    return;
-                }
-                toggleModal(exportModal, true)
-            });
-            document.getElementById('cancel-export-btn').addEventListener('click', () => toggleModal(exportModal, false));
+            const onScanFailure = (error) => { /* console.warn(`Code scan error = ${error}`); */ };
 
             // --- Export Functions ---
             const getFormattedDateTime = () => {
                 const now = new Date();
-                return now.toLocaleString('es-AR');
+                const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
+                return now.toLocaleString('es-AR', options).replace(',', '');
             }
 
             const generateFilename = (extension) => {
@@ -398,68 +398,239 @@
                 URL.revokeObjectURL(url);
             }
 
-            // Export to CSV/TXT
-            document.getElementById('export-csv-btn').addEventListener('click', () => exportData('csv'));
-            document.getElementById('export-txt-btn').addEventListener('click', () => exportData('txt'));
-
-            const exportData = (format) => {
+            const afterExportAction = () => {
+                showConfirm('Exportación Completa', '¿Desea borrar los datos recolectados?', (confirmed) => {
+                    if (confirmed) {
+                        clearInventory();
+                    }
+                });
+            };
+            
+            const exportCSVorTXT = (format) => {
                 const headers = ['Código de Producto', 'Ubicación', 'Cantidad'];
                 const rows = inventory.map(item => [item.productCode, item.location, item.quantity]);
 
-                let csvContent = "";
-                // Add company info as comments
-                csvContent += `# Informe de Inventario\n`;
-                csvContent += `# Fecha y Hora de Exportación: ${getFormattedDateTime()}\n`;
-                csvContent += `# Dirección: ${companyInfo.address || 'N/A'}\n`;
-                csvContent += `# Teléfono: ${companyInfo.phone || 'N/A'}\n\n`;
+                let content = "";
+                content += `# Informe de Inventario\n`;
+                content += `# Fecha y Hora de Exportación: ${getFormattedDateTime()}\n`;
+                content += `# Dirección: ${companyInfo.address || 'N/A'}\n`;
+                content += `# Teléfono: ${companyInfo.phone || 'N/A'}\n\n`;
                 
-                csvContent += headers.join(',') + '\n';
+                content += headers.join(',') + '\n';
                 rows.forEach(row => {
-                    csvContent += row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(',') + '\n';
+                    content += row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(',') + '\n';
                 });
 
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const mimeType = format === 'csv' ? 'text/csv;charset=utf-8;' : 'text/plain;charset=utf-8;';
+                const blob = new Blob([content], { type: mimeType });
                 createDownloadLink(blob, generateFilename(format));
-                toggleModal(exportModal, false);
+                toggleModal(dom.exportModal, false);
+                showToast(`Datos exportados a ${format.toUpperCase()}.`);
+                afterExportAction();
             };
 
-            // Export to XLSX
-            document.getElementById('export-xlsx-btn').addEventListener('click', () => {
+            const exportXLSX = () => {
                 const headerData = [
                     ["Informe de Inventario"],
                     [],
                     ["Fecha y Hora de Exportación:", getFormattedDateTime()],
                     ["Dirección:", companyInfo.address || 'N/A'],
                     ["Teléfono:", companyInfo.phone || 'N/A'],
-                    [] // Empty row for spacing
+                    []
                 ];
                 
                 const ws = XLSX.utils.aoa_to_sheet(headerData);
                 
                 XLSX.utils.sheet_add_json(ws, inventory, {
-                    origin: "A7", // Start data at row 7
+                    origin: "A7",
                     header: ["productCode", "location", "quantity"]
                 });
 
-                // Rename headers in the sheet
                 ws['A7'].v = "Código de Producto";
                 ws['B7'].v = "Ubicación";
                 ws['C7'].v = "Cantidad";
 
-                // Set column widths
                 ws['!cols'] = [{ wch: 40 }, { wch: 30 }, { wch: 15 }];
                 
-                // Style header
-                ws['A1'].s = { font: { bold: true, sz: 16 }, alignment: { horizontal: "center" } };
+                if (ws['A1']) {
+                    ws['A1'].s = { font: { bold: true, sz: 16 }, alignment: { horizontal: "center" } };
+                }
                 ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 2 } }];
-
 
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Inventario");
 
                 XLSX.writeFile(wb, generateFilename('xlsx'));
-                toggleModal(exportModal, false);
+                toggleModal(dom.exportModal, false);
+                showToast('Datos exportados a Excel (.xlsx).');
+                afterExportAction();
+            };
+
+
+            // --- Event Listeners ---
+            document.getElementById('scan-product-btn').addEventListener('click', () => {
+                if (currentScanTarget === 'product') stopScanner();
+                else startScanner('product');
             });
+            
+            document.getElementById('scan-location-btn').addEventListener('click', () => {
+                if (currentScanTarget === 'location') stopScanner();
+                else startScanner('location');
+            });
+
+            document.getElementById('add-item-btn').addEventListener('click', () => {
+                const productCode = dom.productCodeInput.value.trim();
+                const location = dom.locationInput.value.trim();
+                const quantity = parseInt(dom.quantityInput.value);
+
+                if (!productCode) {
+                    showToast('El código de producto no puede estar vacío.');
+                    return;
+                }
+                if (!location) {
+                    showToast('La ubicación no puede estar vacía.');
+                    return;
+                }
+                if (isNaN(quantity) || quantity <= 0) {
+                     showToast('La cantidad debe ser un número positivo.');
+                     return;
+                }
+
+                const newItem = { id: Date.now(), productCode, location, quantity };
+                inventory.unshift(newItem); // Add to the beginning for easier view of new items
+                saveState();
+                renderTable();
+
+                // Reset inputs for next item
+                dom.productCodeInput.value = '';
+                dom.locationInput.value = '';
+                dom.quantityInput.value = '1';
+                dom.productCodeInput.focus();
+                showToast('Item agregado a la lista.');
+            });
+            
+            // Reset Load Button
+            document.getElementById('reset-load-btn').addEventListener('click', () => {
+                showConfirm('Resetear Carga', '¿Está seguro que desea borrar TODOS los datos recolectados?', (confirmed) => {
+                    if (confirmed) {
+                        showPasswordPrompt((passwordConfirmed) => {
+                            if (passwordConfirmed) {
+                                clearInventory();
+                            } else {
+                                showToast('Operación cancelada.');
+                            }
+                        });
+                    } else {
+                        showToast('Operación cancelada.');
+                    }
+                });
+            });
+
+            // Table Editing & Deleting
+            dom.tableBody.addEventListener('input', (e) => {
+                if (e.target.tagName === 'INPUT') {
+                    const id = parseInt(e.target.closest('tr').dataset.id);
+                    const field = e.target.dataset.field;
+                    let value = e.target.type === 'number' ? parseInt(e.target.value) : e.target.value;
+
+                    // Basic validation for quantity
+                    if (field === 'quantity' && (isNaN(value) || value < 0)) {
+                        value = 0; // Or reset to previous valid value
+                        e.target.value = 0; // Update input field
+                        showToast('La cantidad debe ser un número positivo o cero.');
+                    }
+
+                    const item = inventory.find(i => i.id === id);
+                    if (item) {
+                        item[field] = value;
+                        saveState();
+                    }
+                }
+            });
+
+            // Corrected delete button logic (event delegation)
+            dom.tableBody.addEventListener('click', (e) => {
+                const deleteBtn = e.target.closest('.delete-btn');
+                if (deleteBtn) {
+                    const row = deleteBtn.closest('tr');
+                    const id = parseInt(row.dataset.id);
+                    showConfirm('Eliminar Item', '¿Está seguro de que quiere eliminar este item?', (confirmed) => {
+                        if (confirmed) {
+                            inventory = inventory.filter(i => i.id !== id);
+                            saveState();
+                            renderTable();
+                            showToast('Item eliminado.');
+                        } else {
+                            showToast('Eliminación cancelada.');
+                        }
+                    });
+                }
+            });
+
+            // Modals Buttons - Confirmation
+            document.getElementById('confirm-ok-btn').addEventListener('click', () => {
+                if (confirmCallback) confirmCallback(true);
+                toggleModal(dom.confirmModal, false);
+            });
+            document.getElementById('confirm-cancel-btn').addEventListener('click', () => {
+                if (confirmCallback) confirmCallback(false);
+                toggleModal(dom.confirmModal, false);
+            });
+
+            // Modals Buttons - Password
+            document.getElementById('password-confirm-btn').addEventListener('click', () => {
+                if (dom.passwordInput.value === RESET_PASSWORD) {
+                    if (confirmCallback) confirmCallback(true);
+                    toggleModal(dom.passwordModal, false);
+                } else {
+                    showToast('Contraseña incorrecta.');
+                    if (confirmCallback) confirmCallback(false); // Call with false if password is wrong
+                    toggleModal(dom.passwordModal, false);
+                }
+            });
+            document.getElementById('password-cancel-btn').addEventListener('click', () => {
+                if (confirmCallback) confirmCallback(false);
+                toggleModal(dom.passwordModal, false);
+            });
+
+            // --- Event Listeners for Modals (now that they are fully in HTML) ---
+            // Settings Modal
+            document.getElementById('settings-btn').addEventListener('click', () => toggleModal(dom.settingsModal, true));
+            document.getElementById('cancel-settings-btn').addEventListener('click', () => toggleModal(dom.settingsModal, false));
+            document.getElementById('save-settings-btn').addEventListener('click', () => {
+                companyInfo.address = dom.companyAddressInput.value;
+                companyInfo.phone = dom.companyPhoneInput.value;
+
+                const logoFile = dom.companyLogoInput.files[0];
+                if (logoFile) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        companyInfo.logo = e.target.result;
+                        saveState();
+                        renderCompanyInfo();
+                        showToast('Ajustes guardados con éxito.');
+                    };
+                    reader.readAsDataURL(logoFile);
+                } else {
+                    saveState();
+                    renderCompanyInfo(); // Render even if no new logo is selected
+                    showToast('Ajustes guardados con éxito.');
+                }
+                toggleModal(dom.settingsModal, false);
+            });
+
+            // Export Modal
+            document.getElementById('finish-load-btn').addEventListener('click', () => {
+                if(inventory.length === 0) {
+                    showToast('No hay datos para exportar.');
+                    return;
+                }
+                toggleModal(dom.exportModal, true);
+            });
+            document.getElementById('cancel-export-btn').addEventListener('click', () => toggleModal(dom.exportModal, false));
+            document.getElementById('export-xlsx-btn').addEventListener('click', exportXLSX);
+            document.getElementById('export-csv-btn').addEventListener('click', () => exportCSVorTXT('csv'));
+            document.getElementById('export-txt-btn').addEventListener('click', () => exportCSVorTXT('txt'));
 
             // --- Initial Load ---
             loadState();
