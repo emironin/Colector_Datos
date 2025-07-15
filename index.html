@@ -42,8 +42,10 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
 
+    <!-- Contenedor principal -->
     <div class="container mx-auto p-4 max-w-4xl">
 
+        <!-- Cabecera -->
         <header class="flex justify-between items-center bg-white p-4 rounded-lg shadow-md mb-6">
             <div class="flex items-center space-x-4">
                 <img id="company-logo-display" src="https://placehold.co/80x80/e2e8f0/333333?text=Logo" alt="Logo de la Empresa" class="h-16 w-16 object-contain rounded-md bg-gray-200">
@@ -57,15 +59,16 @@
             </button>
         </header>
 
+        <!-- Escáner y Controles -->
         <main class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
             <div class="flex flex-col md:flex-row gap-6">
                 <div class="flex-1">
                     <h2 class="text-xl font-bold mb-4">Escanear Código de Barras</h2>
                     <div id="reader" class="mx-auto"></div>
                     <div id="scanner-controls" class="mt-4 text-center">
-                           <button id="start-scan-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-all w-full">
-                               Iniciar Escáner
-                           </button>
+                         <button id="start-scan-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-all w-full">
+                            Iniciar Escáner
+                        </button>
                     </div>
                 </div>
                 <div class="md:w-px bg-gray-200"></div>
@@ -87,15 +90,17 @@
                                 </tr>
                             </thead>
                             <tbody id="inventory-table-body" class="bg-white divide-y divide-gray-200">
-                                </tbody>
+                                <!-- Filas de la tabla se insertarán aquí -->
+                            </tbody>
                         </table>
                     </div>
-                   <p id="no-items-msg" class="text-center text-gray-500 p-8">No hay items cargados. Use el escáner para comenzar.</p>
+                     <p id="no-items-msg" class="text-center text-gray-500 p-8">No hay items cargados. Use el escáner para comenzar.</p>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Modal de Ajustes -->
     <div id="settings-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
         <div class="modal-content bg-white w-full max-w-md p-6 rounded-lg shadow-xl transform scale-95">
             <h3 class="text-2xl font-bold mb-6">Ajustes de la Empresa</h3>
@@ -120,6 +125,7 @@
         </div>
     </div>
 
+    <!-- Modal de Exportación -->
     <div id="export-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
         <div class="modal-content bg-white w-full max-w-sm p-6 rounded-lg shadow-xl transform scale-95">
             <h3 class="text-2xl font-bold mb-6 text-center">Exportar Datos</h3>
@@ -130,7 +136,7 @@
                 Excel (.xlsx)
                 </button>
                 <button id="export-csv-btn" class="w-full flex items-center justify-center bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-800 transition-all">
-                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="mr-2" viewBox="0 0 16 16"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V9H3V2a1 1 0 0 1 1-1h5.5v2zM3 12v-2h2v2H3zm0 1h2v2H3v-2zm0-5h2v2H3v-2zm3 5h2v2H6v-2zm0-2h2v2H6v-2zm0-3h2v2H6V9zm3 2h2v2H9v-2zm0-2h2v2H9v-2zm0-3h2v2H9V9z"/></svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="mr-2" viewBox="0 0 16 16"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V9H3V2a1 1 0 0 1 1-1h5.5v2zM3 12v-2h2v2H3zm0 1h2v2H3v-2zm0-5h2v2H3v-2zm3 5h2v2H6v-2zm0-2h2v2H6v-2zm0-3h2v2H6V9zm3 2h2v2H9v-2zm0-2h2v2H9v-2zm0-3h2v2H9V9z"/></svg>
                 CSV para Excel
                 </button>
                 <button id="export-txt-btn" class="w-full flex items-center justify-center bg-gray-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-600 transition-all">
@@ -144,8 +150,10 @@
         </div>
     </div>
     
+    <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
 
+    <!-- Scripts -->
     <script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
@@ -222,7 +230,6 @@
                 document.getElementById('company-address-display').textContent = companyInfo.address || 'Dirección no configurada';
                 document.getElementById('company-phone-display').textContent = companyInfo.phone || 'Teléfono no configurado';
                 
-                // Set input values for the modal
                 document.getElementById('company-address-input').value = companyInfo.address || '';
                 document.getElementById('company-phone-input').value = companyInfo.phone || '';
             };
@@ -231,10 +238,10 @@
                 tableBody.innerHTML = '';
                 if (inventory.length === 0) {
                     noItemsMsg.classList.remove('hidden');
-                    tableBody.parentElement.parentElement.classList.add('hidden'); // Hide the table itself
+                    tableBody.parentElement.parentElement.classList.add('hidden');
                 } else {
                     noItemsMsg.classList.add('hidden');
-                    tableBody.parentElement.parentElement.classList.remove('hidden'); // Show the table
+                    tableBody.parentElement.parentElement.classList.remove('hidden');
                 }
 
                 inventory.forEach(item => {
@@ -284,7 +291,7 @@
             };
 
             const onScanFailure = (error) => {
-                // console.warn(`Code scan error = ${error}`); // Keep this commented out unless debugging
+                // console.warn(`Code scan error = ${error}`);
             };
 
             // --- Event Listeners ---
@@ -319,13 +326,13 @@
                     reader.onload = (e) => {
                         companyInfo.logo = e.target.result;
                         saveState();
-                        renderCompanyInfo(); // Render after logo is loaded
+                        renderCompanyInfo();
                         showToast('Ajustes guardados con éxito.');
                     };
                     reader.readAsDataURL(logoFile);
                 } else {
                     saveState();
-                    renderCompanyInfo(); // Render even if no new logo is selected
+                    renderCompanyInfo();
                     showToast('Ajustes guardados con éxito.');
                 }
                 toggleModal(settingsModal, false);
@@ -346,10 +353,8 @@
             });
 
             tableBody.addEventListener('click', (e) => {
-                // Correctly identify the delete button click
-                const deleteBtn = e.target.closest('.delete-btn');
-                if (deleteBtn) {
-                    const row = deleteBtn.closest('tr');
+                if (e.target.closest('.delete-btn')) {
+                    const row = e.target.closest('tr');
                     const id = parseInt(row.dataset.id);
                     if (confirm('¿Estás seguro de que quieres eliminar este item?')) {
                         inventory = inventory.filter(i => i.id !== id);
@@ -373,9 +378,7 @@
             // --- Export Functions ---
             const getFormattedDateTime = () => {
                 const now = new Date();
-                // Format for Argentina local date and time without seconds
-                const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
-                return now.toLocaleString('es-AR', options).replace(',', ''); // Remove comma for cleaner string
+                return now.toLocaleString('es-AR');
             }
 
             const generateFilename = (extension) => {
@@ -403,23 +406,21 @@
                 const headers = ['Código de Producto', 'Ubicación', 'Cantidad'];
                 const rows = inventory.map(item => [item.productCode, item.location, item.quantity]);
 
-                let content = "";
-                // Add company info as comments (only for CSV/TXT)
-                content += `# Informe de Inventario\n`;
-                content += `# Fecha y Hora de Exportación: ${getFormattedDateTime()}\n`;
-                content += `# Dirección: ${companyInfo.address || 'N/A'}\n`;
-                content += `# Teléfono: ${companyInfo.phone || 'N/A'}\n\n`;
+                let csvContent = "";
+                // Add company info as comments
+                csvContent += `# Informe de Inventario\n`;
+                csvContent += `# Fecha y Hora de Exportación: ${getFormattedDateTime()}\n`;
+                csvContent += `# Dirección: ${companyInfo.address || 'N/A'}\n`;
+                csvContent += `# Teléfono: ${companyInfo.phone || 'N/A'}\n\n`;
                 
-                content += headers.join(',') + '\n';
+                csvContent += headers.join(',') + '\n';
                 rows.forEach(row => {
-                    content += row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(',') + '\n';
+                    csvContent += row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(',') + '\n';
                 });
 
-                const mimeType = format === 'csv' ? 'text/csv;charset=utf-8;' : 'text/plain;charset=utf-8;';
-                const blob = new Blob([content], { type: mimeType });
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 createDownloadLink(blob, generateFilename(format));
                 toggleModal(exportModal, false);
-                showToast(`Datos exportados a ${format.toUpperCase()}.`);
             };
 
             // Export to XLSX
@@ -449,9 +450,7 @@
                 ws['!cols'] = [{ wch: 40 }, { wch: 30 }, { wch: 15 }];
                 
                 // Style header
-                if (ws['A1']) { // Check if A1 exists before trying to style it
-                    ws['A1'].s = { font: { bold: true, sz: 16 }, alignment: { horizontal: "center" } };
-                }
+                ws['A1'].s = { font: { bold: true, sz: 16 }, alignment: { horizontal: "center" } };
                 ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 2 } }];
 
 
@@ -460,7 +459,6 @@
 
                 XLSX.writeFile(wb, generateFilename('xlsx'));
                 toggleModal(exportModal, false);
-                showToast('Datos exportados a Excel (.xlsx).');
             });
 
             // --- Initial Load ---
